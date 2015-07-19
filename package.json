@@ -1,0 +1,14 @@
+{
+  "name": "rest",
+  "version": "1.0.0",
+  "description": "REST/JSON Service Starter",
+  "main": "service.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ovidiu Negus",
+  "license": "ISC",
+  "devDependencies": {
+    "frisby": "^0.8.5"
+  }
+}
