@@ -1,9 +1,9 @@
 var keys = {
-	'test-key': { enabled: true },
-	'test-key-disabled': { enabled: false },
+	'test-key': { name: '', enabled: true },
+	'test-key-disabled': { name: '', enabled: false },
 	'aima-secret': {
-		enabled: true,
-		name: 'AIMA Mobile Application'
+		name: 'AIMA Mobile Application',
+		enabled: true		
 	}
 };
 

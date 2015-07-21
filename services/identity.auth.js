@@ -1,4 +1,8 @@
 var restify = require('restify');
+var ldap = require('ldapjs');
+
+var config = require('../config.js');
+
 
 module.exports = function(user, password, token)
 {
@@ -11,34 +15,25 @@ function auth1(user, password)
 {
 	check1(user, password);
 
-	if(user === 'a' && password === 'a')
-		return {
+	var client = ldap.createClient({ url: 'ldap://' + config.ldap.server });
+	client.bind(user, password, function(err, data) {
+		if(err)
+		{
+			if(err.name === 'InvalidCredentialsError')
+				return { status: 'fail' };
+
+			throw new restify.errors.InternalServerError('LDAP server error: {error}'.interpolate({ error: err.name }));
+		}
+
+		var t = tokens.new(user);
+		res.send({
 			status: 'success',
-			token: 'varza',
-    	expires: new Date(2015, 6, 1),
-    	identity: '12345'
-		};
-	else
-		return {
-				status: 'fail'
-			};
+			token: t.token,
+			expires: t.expires,
+			identity: t.identity
+		});
+	});
 }
-
-function auth2(token)
-{
-	check2(token);
-
-	if(token === 'varza')
-		return {
-			status: 'valid',
-    	expires: new Date(2015, 6, 1)
-		};
-	else
-		return {
-			status: 'invalid'
-		};
-}
-
 
 function check1(user, password)
 {
@@ -55,6 +50,21 @@ function check1(user, password)
 	// check for wrong values
 	if(user.length === 0)
 		throw new restify.errors.InvalidArgumentError('Invalid argument: [user].');
+}
+
+function auth2(token)
+{
+	check2(token);
+
+	if(token === 'varza')
+		return {
+			status: 'valid',
+    	expires: new Date(2015, 6, 1)
+		};
+	else
+		return {
+			status: 'invalid'
+		};
 }
 
 function check2(token)

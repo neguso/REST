@@ -60,8 +60,3 @@ function respond(req, res, next)
 	}
 }
 module.exports = respond;
-
-respond.configure = function()
-{
-}
-

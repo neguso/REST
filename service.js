@@ -7,7 +7,6 @@ var server = restify.createServer();
 server.use(restify.queryParser());
 
 var $identity = require('./services/identity.js');
-$identity.configure();
 server.get('/identity', $identity);
 server.get('/identity/:action', $identity);
 
