@@ -14,7 +14,7 @@ module.exports = {
 		var now = new Date();
 		var token = {
 			token: uuid.v4(),
-			expire: new Date(now.getFullYear(), now.getMonth(), now.getDate() + config.token.life),
+			expire: new Date(now.getFullYear(), now.getMonth(), now.getDate() + config.token.lifetime),
 			identity: identity
 		};
 		storage.setItemSync(token.token, token);

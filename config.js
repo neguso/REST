@@ -1,7 +1,7 @@
 module.exports = {
 	
 	token: {
-		life: 10,						// lifetime in days
+		lifetime: 10,				// lifetime in days
 		dir: '../.storage'	// storage folder
 	},
 	

@@ -6,15 +6,15 @@ var $auth = require('./identity.auth.js');
 var $get = require('./identity.get.js');
 
 
-function respond(req, res, next)
+module.exports = function(req, res, next)
 {
 	try
 	{
 		// check application key
 		utils.checkKey(req);
-
+		
 		// execute requested action
-		if(typeof req.params.action === 'undefined' || req.params.action === '')
+		if(typeof req.params.action === 'undefined' || req.params.action.length === 0)
 			throw new restify.errors.BadRequestError('Service action not specified.');
 		switch(req.params.action)
 		{
@@ -24,23 +24,24 @@ function respond(req, res, next)
 				return next(new restify.errors.BadRequestError('Invalid service action.'));
 		}
 	}
-	catch(err)
+	catch (err)
 	{
 		return next(err);
 	}
-
-
-	function handle_auth(user, password)
+	
+	
+	function handle_auth(user, password, token)
 	{
-		try
+		$auth(user, password, token)
+		.then(function(result)
 		{
-			res.json($auth(user, password));
+			res.json(result);
 			next();
-		}
-		catch(err)
+		})
+		.catch(function(err)
 		{
 			next(err);
-		}
+		});
 	}
 	
 	function handle_get(filter, order, skip, take, fields)
@@ -53,10 +54,9 @@ function respond(req, res, next)
 			res.json($get(token, filter, order, skip, take, fields));
 			next();
 		}
-		catch(err)
+		catch (err)
 		{
 			next(err);
 		}
 	}
 }
-module.exports = respond;

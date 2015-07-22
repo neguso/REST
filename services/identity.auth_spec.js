@@ -69,17 +69,17 @@ frisby.create('Test [auth] action with wrong parameters value')
 	.get(server + '/identity/auth?key=test-key&token=')
 	.expectStatus(409).expectHeaderContains('content-type', 'application/json')
 	.expectJSON({
-		code: 'MissingParameter'
+		code: 'InvalidArgument'
 	})
 	.toss();
 
 frisby.create('Test [auth] action with valid parameters value')
-	.get(server + '/identity/auth?key=test-key&user=a&password=a')
+	.get(server + '/identity/auth?key=test-key&user=ovidiu.negus@accesa.eu&password=V@rzamulta05')
 	.expectStatus(200).expectHeaderContains('content-type', 'application/json')
 	.expectJSON({
 		status: 'success',
-		token: 'varza',
-		identity: '12345'
+		//token: function(val) { return val.length > 0 },
+		identity: 'ovidiu.negus@accesa.eu'
 	})
 	.toss();
 
