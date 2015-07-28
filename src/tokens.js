@@ -1,11 +1,18 @@
-var storage = require('node-persist');
-var uuid = require('node-uuid');
+var storage = require('node-persist'),
+		uuid = require('node-uuid'),
+		q = require('q');
+
 var config = require('../config.js');
 
 
 storage.initSync({
 	dir: config.token.dir
 });
+
+function init()
+{
+	var defer = q.defer();
+}
 
 module.exports = {
 

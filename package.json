@@ -6,9 +6,16 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Ovidiu Negus",
+  "author": "Ovidiu Negus <ovidiu.negus@accesa.eu>",
   "license": "ISC",
   "devDependencies": {
     "frisby": "^0.8.5"
+  },
+  "dependencies": {
+    "ldapjs": "^0.7.1",
+    "node-persist": "0.0.6",
+    "node-uuid": "^1.4.3",
+    "q": "^1.4.1",
+    "restify": "^3.0.3"
   }
 }
