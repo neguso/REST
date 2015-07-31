@@ -2,6 +2,7 @@ var restify = require('restify');
 
 var keys = require('../src/keys.js');
 var utils = require('./utils.js');
+
 var $auth = require('./identity.auth.js');
 var $get = require('./identity.get.js');
 

@@ -31,7 +31,7 @@ function auth1(user, password)
 				if(err.name === 'InvalidCredentialsError')
 					defer.resolve({ status: 'fail' });
 				else
-					defer.reject(restify.errors.InternalServerError('LDAP server error: {error}'.interpolate({ error: err.name })));
+					defer.reject(new restify.errors.InternalServerError('LDAP server error: {error}'.interpolate({ error: err.name })));
 			}
 			else
 			{

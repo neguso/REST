@@ -78,12 +78,12 @@ frisby.create('Test [auth] action with valid parameters value')
 	.expectStatus(200).expectHeaderContains('content-type', 'application/json')
 	.expectJSON({
 		status: 'success',
-		//token: function(val) { return val.length > 0 },
+		token: function(val) { return val.length > 0 },
 		identity: 'ovidiu.negus@accesa.eu'
 	})
 	.toss();
 
-frisby.create('Test [auth] action with valid parameters value and disabled key')
+frisby.create('Test [auth] action with disabled key')
 	.get(server + '/identity/auth?key=test-key-disabled&user=a&password=a')
 	.expectStatus(400).expectHeaderContains('content-type', 'application/json')
 	.expectJSON({
