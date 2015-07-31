@@ -1,26 +1,38 @@
-var restify = require('restify');
-var ldap = require('ldapjs');
-var q = require('q');
+var restify = require('restify'),
+    ldap = require('ldapjs'),
+    q = require('q');
 
-var config = require('../config.js');
 var tokens = require('../src/tokens.js');
+var config = require('../config.js');
 
 
 module.exports = function(user, password, token)
 {
 	if(typeof user !== 'undefined' || typeof password !== 'undefined')
-		return auth1(user, password);
-	return auth2(token);
+		return auth(user, password);
+	return check(token);
 }
 
-function auth1(user, password)
+
+function auth(user, password)
 {
 	var defer = q.defer();
 	
 	try
 	{
-		// check parameters
-		check1(user, password);
+    // check for missing parameters
+    var missing = [];
+    if(typeof user === 'undefined')
+      missing.push('user');
+    if(typeof password === 'undefined')
+      missing.push('password');
+    
+    if(missing.length > 0)
+      throw new restify.errors.MissingParameterError('Parameters missing: [{missing}].'.interpolate({ missing: missing.join(', ') }));
+    
+    // check for wrong parameters value
+    if(user.length === 0)
+      throw new restify.errors.InvalidArgumentError('Invalid argument: [user].');
 
 		// autheticate user
 		var client = ldap.createClient({ url: 'ldap://' + config.ldap.server });
@@ -36,13 +48,20 @@ function auth1(user, password)
 			else
 			{
 				// create token
-				var t = tokens.new(user);
-				defer.resolve({
-					status: 'success',
-					token: t.token,
-					expires: t.expires,
-					identity: t.identity
-				});
+        tokens.new(user)
+        .then(function(result)
+        {
+          defer.resolve({
+            status: 'success',
+            token: result.token,
+            expires: result.expires,
+            identity: result.identity
+          });
+        })
+        .catch(function(err)
+        {
+          defer.reject(new restify.errors.InternalServerError('Error creating token: {error}'.interpolate({ error: err.name })));
+        });				
 			}
 		});
 	}
@@ -54,46 +73,41 @@ function auth1(user, password)
 	return defer.promise;
 }
 
-function check1(user, password)
-{
-	// check for missing parameters
-	var missing = [];
-	if(typeof user === 'undefined')
-		missing.push('user');
-	if(typeof password === 'undefined')
-		missing.push('password');
-	
-	if(missing.length > 0)
-		throw new restify.errors.MissingParameterError('Parameters missing: [{missing}].'.interpolate({ missing: missing.join(', ') }));
-	
-	// check for wrong values
-	if(user.length === 0)
-		throw new restify.errors.InvalidArgumentError('Invalid argument: [user].');
-}
 
-
-function auth2(token)
+function check(token)
 {
 	var defer = q.defer();
 
 	try
 	{
-		// check parameters
-		check2(token);
+    // check for missing parameters
+    if(typeof token === 'undefined')
+      throw new restify.errors.MissingParameterError('Parameters missing: [token].');
+    
+    // check for wrong parameters value
+    if(token.length === 0)
+      throw new restify.errors.InvalidArgumentError('Invalid argument: [token].');
 		
-		var t = tokens.get(token);
-		if(t === null)
-		{
-			defer.resolve({ status: 'invalid' });
-		}
-		else
-		{
-			defer.resolve({
-				status: 'valid',
-				token: t.token,
-				expires: t.expires
-			});
-		}
+    tokens.get(token)
+    .then(function(result)
+    {
+      if(result === null)
+      {
+        defer.resolve({ status: 'invalid' });
+      }
+      else
+      {
+        defer.resolve({
+          status: 'valid',
+          token: t.token,
+          expires: t.expires
+        });
+      }
+    })
+    .catch(function(err)
+    {
+      defer.reject(new restify.errors.InternalServerError('Error reading token: {error}'.interpolate({ error: err.name })));
+    });		
 	}
   catch (err)
 	{
@@ -101,15 +115,4 @@ function auth2(token)
 	}
 
 	return defer.promise;
-}
-
-function check2(token)
-{
-	// check for missing parameters
-	if(typeof token === 'undefined')
-		throw new restify.errors.MissingParameterError('Parameters missing: [token].');
-	
-	// check for wrong values
-	if(token.length === 0)
-		throw new restify.errors.InvalidArgumentError('Invalid argument: [token].');
 }

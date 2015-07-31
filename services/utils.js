@@ -1,4 +1,5 @@
-var restify = require('restify');
+var restify = require('restify'),
+    q = require('q');
 var keys = require('../src/keys.js');
 
 module.exports = {
@@ -17,7 +18,10 @@ module.exports = {
 
 	checkAuth: function(req)
 	{
-		
+    var defer = q.defer();
+
+
+    return defer.promise();
 	}
 
 };

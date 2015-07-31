@@ -1,15 +1,9 @@
 var storage = require('node-persist'),
 		uuid = require('node-uuid'),
 		q = require('q');
-
 var config = require('../config.js');
 
-
-
-function init()
-{
-	var defer = q.defer();
-}
+storage.initSync({ dir: config.token.dir });
 
 module.exports = {
 
@@ -24,49 +18,32 @@ module.exports = {
 			identity: identity
 		};
 		
-		init()
-		.then(function(result)
-		{
-			storage.setItem(token.token, token, function(err)
-			{
-				if(err)
-					defer.reject();
-				else
-					defer.resolve(token);
-			});
-		})
-		.catch(function(error)
-		{
-			defer.reject();
-		});
+    storage.setItem(token.token, token, function(err)
+    {
+      if(err)
+        defer.reject(err);
+      else
+        defer.resolve(token);
+    });
 		
 		return defer.promise;
 	},
 
 	get: function(token)
 	{
+    var defer = q.defer();
+
 		if(typeof token === 'undefined' || token === null)
 			return null;
-			
-		var o = storage.getItem(token);
-		if(typeof o === 'undefined')
-			return null;
-		else
-			return o;
+    
+    var o = storage.getItem(token, function(err, value)
+    {
+      if(err)
+        defer.reject(err);
+      else
+        defer.resolve(typeof value === 'undefined' ? null : value);      
+    });
+
+    return defer.promise;
 	}
 };
-
-function init()
-{
-	var defer = q.defer();
-	
-	storage.init({ dir: config.token.dir }, function(err)
-	{
-		if(err)
-			defer.reject();
-		else
-			defer.resolve();
-	});
-	
-	return defer.promise;
-}

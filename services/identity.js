@@ -20,7 +20,8 @@ module.exports = function(req, res, next)
 		switch(req.params.action)
 		{
 			case 'auth': handle_auth(req.query.user, req.query.password, req.query.token); break;
-			case 'get': handle_get(); break;
+      case 'get': handle_get(); break;
+      //...
 			default:
 				return next(new restify.errors.BadRequestError('Invalid service action.'));
 		}
@@ -47,17 +48,23 @@ module.exports = function(req, res, next)
 	
 	function handle_get(filter, order, skip, take, fields)
 	{
-		try
-		{
-			// check authentication
-			var token = utils.checkAuth(req);
-			
-			res.json($get(token, filter, order, skip, take, fields));
-			next();
-		}
-		catch (err)
-		{
-			next(err);
-		}
+    utils.checkAuth(req)
+    .then(function(result)
+    {
+      $get(filter, order, skip, take, fields)
+      .then(function(result)
+      {
+        res.json(result);
+        next();
+      })
+      .catch(function(err)
+      {
+        next(err);
+      });
+    })
+    .catch(function(err)
+    {
+      next(err);
+    });
 	}
 }
