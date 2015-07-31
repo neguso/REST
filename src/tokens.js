@@ -1,14 +1,18 @@
-var storage = require('node-persist');
-var uuid = require('node-uuid');
-var q = require('q');
+var storage = require('node-persist'),
+		uuid = require('node-uuid'),
+		q = require('q');
 
 var config = require('../config.js');
 
 
 
+function init()
+{
+	var defer = q.defer();
+}
 
 module.exports = {
-	
+
 	new: function(identity)
 	{
 		var defer = q.defer();
@@ -38,12 +42,12 @@ module.exports = {
 		
 		return defer.promise;
 	},
-	
+
 	get: function(token)
 	{
 		if(typeof token === 'undefined' || token === null)
 			return null;
-		
+			
 		var o = storage.getItem(token);
 		if(typeof o === 'undefined')
 			return null;
