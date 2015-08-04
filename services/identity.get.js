@@ -9,6 +9,7 @@ module.exports = function(filter, order, skip, take, fields)
 {
   var defer = q.defer();
   
+  // fields
   var aryFields = [];
   if(typeof fields !== 'undefined')
   {
@@ -23,6 +24,7 @@ module.exports = function(filter, order, skip, take, fields)
   if(aryFields.length === 0)
     aryFields = ['Identity', 'FirstName', 'LastName'];
   
+  // order
 
 
   return defer.promise;

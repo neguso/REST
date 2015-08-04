@@ -1,5 +1,5 @@
 var frisby = require('frisby');
-var server = 'http://localhost:8080';
+var server = 'http://localhost:8081';
 
 frisby.create('Test service without action and key')
 	.get(server + '/identity')
